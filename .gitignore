@@ -29,6 +29,7 @@
 # System files
 src/.DS_Store
 src/.vscode/ipch/b8f308bcfc7e7519/main.ipch
+src/.vscode/ipch/b8f308bcfc7e7519/mmap_address.bin
 
 # Executables
 *.exe
@@ -36,5 +37,6 @@ src/.vscode/ipch/b8f308bcfc7e7519/main.ipch
 *.app
 bpcg
 tsp
+
 
 
