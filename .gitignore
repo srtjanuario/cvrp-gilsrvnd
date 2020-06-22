@@ -28,6 +28,7 @@
 
 # System files
 src/.DS_Store
+src/.vscode/ipch/b8f308bcfc7e7519/main.ipch
 
 # Executables
 *.exe
@@ -35,4 +36,5 @@ src/.DS_Store
 *.app
 bpcg
 tsp
+
 
