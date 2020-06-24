@@ -3,32 +3,31 @@
 #include "input.h"
 #include <vector>
 #include <iostream>
-#include <iomanip>
-#include <set>
-#include <string>
-#include <algorithm>
 using namespace std;
-class Solution{
-    // Create get/set functions
-    public:
-        Solution(Input *in);
-        void computeCostValueTSP();
+class Solution
+{
+public:
+    Solution(Input *in);
 
-        void reset();
+    double totalDistance();
+    void totalDistanceSet(double value);
 
-    //private:
-        // vector< vector<int> > duration; //T(sigma)
-        // vector< vector<int> > cost; //C(sigma)
+    double tourDistance(int vehicle) const;
+    double tourDistanceSet(int vehicle, double value);
 
-        // double costValueMLP;
-        double costValueTSP;
-        
-        vector<int> location;
-        Input* in;
+    double capacityVehicle(int vehicle) const;
+    void capacityVehicleSet(int vehicle, double value);
 
-    friend ostream & operator << (ostream &out, const Solution &c);
+    int tour(int vehicle, int location) const;
+    int tourSet(int v, int location, double value);
 
-    double t_(unsigned i, unsigned j);
+    friend ostream &operator<<(ostream &out, Solution &c);
 
+// protected:
+    double totalDistance_;
+    vector<double> capacityVehicle_;
+    vector<double> tourDistance_;
+    vector<vector<int> > tour_;
+    Input *in;
 };
 #endif //SOLUTION_H_INCLUDED
