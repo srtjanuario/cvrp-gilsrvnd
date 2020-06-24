@@ -21,7 +21,7 @@ Neighborhood::Neighborhood(Input *input)
     NL.push_back("bestReInsertion-1");
     NL.push_back("bestReInsertion-2");
     NL.push_back("bestReInsertion-3");
-    // NL.push_back("swapVehicle");
+    NL.push_back("swapVehicle");
 }
 
 void Neighborhood::bestSwap(Solution *s)
@@ -94,8 +94,7 @@ void Neighborhood::swapVehicle(Solution *s)
     int l2_best;
     int v1_best;
     int v2_best;
-    pair<double,double> zero = make_pair(0,0);
-    pair<double,double> delta = zero;
+    pair<double,double> delta = make_pair(0,0);
     pair<double,double> delta_best = make_pair(INT_MAX/2.0,INT_MAX/2.0);
     for (int v1 = 0; v1 < s->in->nVehicle(); v1++)
         for (int v2 = v1 + 1; v2 < s->in->nVehicle(); v2++)
@@ -103,7 +102,7 @@ void Neighborhood::swapVehicle(Solution *s)
                 for (int l2 = 1; l2 < s->tour_[v2].size() - 1; l2++)
                 {
                     delta = swapVehicleDeltaEvaluation(s, v1, v2, l1, l2);
-                    if (delta < zero && delta  < delta_best)
+                    if (delta.first+delta.second < 0 && delta.first+delta.second  < delta_best.first+delta_best.second)
                     {
                         delta_best = delta;
                         l1_best = l1;
@@ -113,7 +112,7 @@ void Neighborhood::swapVehicle(Solution *s)
                     }
                 }
 
-        if (delta_best < zero)
+        if (delta_best.first+delta_best.second < 0)
             swapVehicleMove(s, v1_best, v2_best, l1_best, l2_best, delta_best);
 
 }
@@ -126,13 +125,13 @@ pair<double,double> Neighborhood::swapVehicleDeltaEvaluation(Solution *s, int v1
     if(s->capacityVehicle(v2) + s->in->demand(s->tour_[v2][l2]) - s->in->demand(s->tour_[v1][l1]) < 0)
         return make_pair(INT_MAX/2-1,INT_MAX/2-1);
 
-    int first = in->distance(s->tour_[v1][l1-1], s->tour_[v1][l2]) +
-           in->distance(s->tour_[v1][l2], s->tour_[v1][l1+1]) -
+    int first = in->distance(s->tour_[v1][l1-1], s->tour_[v2][l2]) +
+           in->distance(s->tour_[v2][l2], s->tour_[v1][l1+1]) -
            in->distance(s->tour_[v1][l1-1], s->tour_[v1][l1]) -
            in->distance(s->tour_[v1][l1], s->tour_[v1][l1 + 1]);
            
-    int second = in->distance(s->tour_[v2][l2-1], s->tour_[v2][l1]) +
-           in->distance(s->tour_[v2][l1], s->tour_[v2][l2 + 1]) -
+    int second = in->distance(s->tour_[v2][l2-1], s->tour_[v1][l1]) +
+           in->distance(s->tour_[v1][l1], s->tour_[v2][l2 + 1]) -
            in->distance(s->tour_[v2][l2], s->tour_[v2][l2 - 1]) -
            in->distance(s->tour_[v2][l2], s->tour_[v2][l2 + 1]);
 
@@ -142,12 +141,12 @@ pair<double,double> Neighborhood::swapVehicleDeltaEvaluation(Solution *s, int v1
 void Neighborhood::swapVehicleMove(Solution *s, int v1, int v2, int l1, int l2, pair<double,double> delta)
 {
     swap(s->tour_[v1][l1], s->tour_[v2][l2]);
-    s->totalDistance_ += delta.first + delta.second;
     s->capacityVehicle_[v1] = s->in->demand(s->tour_[v1][l1]) - s->in->demand(s->tour_[v2][l2]);
     s->capacityVehicle_[v2] = s->in->demand(s->tour_[v2][l2]) - s->in->demand(s->tour_[v1][l1]);
+    
     s->tourDistance_[v1] += delta.first;
     s->tourDistance_[v2] += delta.second;
-
+    s->totalDistance_ += delta.first + delta.second;
 }
 
 
