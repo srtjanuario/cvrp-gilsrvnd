@@ -4,17 +4,13 @@
 
 class Perturbation{
     public:
-        Perturbation(Input *input);
-
         /**
          * Double Bridge
         */
-        Solution bridgePerturbation(const Solution* s, int maxBridges);
-        vector<pair<int,int> > makeBridges(const Solution* s,int bridge);
+        void bridgePerturbation(Solution* s, int maxBridges);
+        vector<pair<int,int> > makeBridges(const Solution* s,int bridge,int vehicle);
 
     //private:
-    Input* in;
-    Solution* localSolution;
     friend ostream & operator << (ostream &out, const Perturbation &c);
     
 };
