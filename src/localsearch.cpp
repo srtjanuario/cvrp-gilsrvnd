@@ -20,19 +20,14 @@ LocalSearch::LocalSearch( Input* input)
     s_star =  new Solution(in);
     s_line =  new Solution(in);
     s_rvnd =  new Solution(in);
-    c = new Construction(s);
-    p = new Perturbation(in);
+    c = new Construction();
+    p = new Perturbation();
     n = new Neighborhood(in);
 }
 
-void LocalSearch::reset(){
-    s_star->reset();
-    s_line->reset();
-}
 
 // GILS-RVND from EJOR2012-Marcos
 Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
-    reset();
 
     for(int i = 1; i <= Imax; i++){
         alpha = randomValue(R);        
@@ -45,7 +40,8 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
                 (*s_line) = (*s);
                 iterILS = 0;
             }//end_if
-            (*s) = p->bridgePerturbation(s_line,4);
+            (*s) = (*s_line);
+            p->bridgePerturbation(s,4);
             iterILS = iterILS + 1;
         }//end_while
         if(f(s_line) < f(s_star)){
@@ -57,7 +53,7 @@ Solution LocalSearch::GILSRVND(int Imax, int Iils, vector<double> &R){
 
 double LocalSearch::f(Solution* s){
     
-        return s->costValueTSP;
+        return s->totalDistance();
     
 }
 
@@ -81,7 +77,7 @@ void LocalSearch::RVND(Solution* s){
     string choosenNeighborhood;
     while(NL.size() != 0){
         choosenNeighborhood = randomNeighborhood();
-        n->improove(s_rvnd,choosenNeighborhood);
+        n->improve(s_rvnd,choosenNeighborhood);
         if(f(s_rvnd) < f(s)){
             (*s) = (*s_rvnd);
         }
