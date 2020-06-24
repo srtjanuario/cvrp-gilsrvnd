@@ -8,6 +8,7 @@ class Perturbation{
          * Double Bridge
         */
         void bridgePerturbation(Solution* s, int maxBridges);
+        void reinsertion(Solution* s);
         vector<pair<int,int> > makeBridges(const Solution* s,int bridge,int vehicle);
 
     //private:
