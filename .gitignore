@@ -30,6 +30,7 @@
 src/.DS_Store
 src/.vscode/ipch/b8f308bcfc7e7519/main.ipch
 src/.vscode/ipch/b8f308bcfc7e7519/mmap_address.bin
+src/a.out.dSYM/Contents/Info.plist
 
 # Executables
 *.exe
@@ -37,6 +38,3 @@ src/.vscode/ipch/b8f308bcfc7e7519/mmap_address.bin
 *.app
 bpcg
 tsp
-
-
-
