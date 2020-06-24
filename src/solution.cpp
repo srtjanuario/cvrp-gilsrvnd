@@ -56,8 +56,14 @@ double Solution::totalDistance()
     for (int v = 0; v < in->nVehicle(); v++)
     {
         tourDistance_[v] = 0;
-        for (int i = 0; i < tour_[v].size() - 1; i++)
-            tourDistance_[v] += in->distance(tour_[v][i], tour_[v][i + 1]);
+        capacityVehicle_[v] = in->capacity();
+        capacityVehicle_[v] -= in->demand(tour_[v][0]);
+        for (int i = 1; i < tour_[v].size(); i++){
+            tourDistance_[v] += in->distance(tour_[v][i], tour_[v][i -1]);
+            capacityVehicle_[v] -= in->demand(tour_[v][i]);
+        }
+        if(capacityVehicle_[v] < 0)
+            cout<<"Vehicle "<<v<<" is over the capacity limit by "<<-capacityVehicle_[v]<<endl;
         totalDistance_ += tourDistance_[v];
     }
     return totalDistance_;
@@ -76,19 +82,20 @@ void Solution::capacityVehicleSet(int vehicle, double value)
 ostream &operator<<(ostream &out, Solution &s)
 {
     out << s.totalDistance() << " 0"
-        << "\\n"; 
-        // << endl;
+        // << "\\n"; 
+        << endl;
 
     for (int v = 0; v < s.in->nVehicle(); v++)
     {
+        // cout<<s.capacityVehicle(v)<<" - ";
         for (int i = 0; i < s.tour_[v].size(); i++)
         {
             out << s.tour_[v][i];
             if (i < s.tour_[v].size() - 1)
                 out << " ";
         }
-        out << "\\n";
-        // out << endl;
+        // out << "\\n";
+        out << endl;
     }
     return out;
 }
