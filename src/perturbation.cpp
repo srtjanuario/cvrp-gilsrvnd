@@ -1,5 +1,6 @@
 #include "perturbation.h"
 #include "solution.h"
+#include "construction.h"
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
@@ -11,92 +12,59 @@
 #include <utility>
 using namespace std;
 
-Perturbation::Perturbation(Input *input)
+void Perturbation::bridgePerturbation(Solution *s, int bridge)
 {
-    this->in = input;
-    localSolution = new Solution(in);
-}
-
-Solution Perturbation::bridgePerturbation(const Solution *s, int bridge)
-{
-
-    vector<pair<int, int>> section(makeBridges(s, bridge));
-    int beginning;
-    int end;
-    int position = 0;
-
-    for (int k = section.size() - 1; k >= 0; k--)
+    for (int vehicle = 0; vehicle < s->in->nVehicle(); vehicle++)
     {
-        beginning = section[k].first;
-        end = section[k].second;
-
-        if (beginning == end)
-        {
-            cout << "Error on " << __FILE__ << " line " << __LINE__ << endl;
-            exit(0);
-        }
-        else if (beginning > end)
-        {
-            while (beginning != end + 1)
-            {
-                localSolution->location[position++] = s->location[beginning];
-                beginning = (beginning + 1) % (s->location.size() - 1);
-            }
-        }
-        else
-        {
-            while (beginning <= end)
-            {
-                localSolution->location[position++] = s->location[beginning++];
-            }
-        }
+        if(s->tour_[vehicle].size() < 9) 
+            continue;
+        
+        vector<pair<int, int>> section(makeBridges(s, bridge, vehicle));
+        vector<int> localSolution = s->tour_[vehicle];
+    
+        int t = 1;
+        for (auto k:section)
+            for(int i = k.first; i <= k.second; i++)
+                s->tour_[vehicle][t++] = localSolution[i];
     }
-    localSolution->location[s->location.size() - 1] = localSolution->location[0];
-
-    localSolution->computeCostValueTSP();
-
-    return (*localSolution);
+    s->totalDistance_ = 0;
+    s->totalDistance();
 }
 
-vector<pair<int, int>> Perturbation::makeBridges(const Solution *s, int bridges)
+vector<pair<int, int>> Perturbation::makeBridges(const Solution *s, int bridges, int vehicle)
 {
-
-    int minimum = 2;
-    // int maximum = max(minimum, int(s->location.size()-1)/10);
-    vector<pair<int, int>> section;
-    bool selected;
-    for (int i = 0; i < bridges; i++)
-    {
-        pair<int, int> myPosition(0, 0);
-        do
-        {
-            selected = true;
-            myPosition.second = rand() % (s->location.size() - 1);
-            for (unsigned j = 0; j < section.size() && selected; j++)
-            {
-                if (myPosition == section[j])
-                    selected = false;
-                //Guarantee minimum size for all subsequences
-                if (abs(myPosition.second - section[j].second) < 2)
-                    selected = false;
-                if (section[j].second == 0 && myPosition.second >= int(s->location.size()) - minimum)
-                    selected = false;
-                if (myPosition.second == 0 && section[j].second >= int(s->location.size()) - minimum)
-                    selected = false;
-            }
-        } while (!selected);
-        section.push_back(myPosition);
-        // Sorting...
-        for (int k = section.size() - 1; k > 0; --k)
-            if (section[k].second < section[k - 1].second)
-            {
-                swap(section[k], section[k - 1]);
-            }
-    }
-    // Fixing first pair
-    section[0].first = (section[section.size() - 1].second + 1) % (s->location.size() - 1);
-    ;
-    for (int k = section.size() - 1; k > 0; --k)
-        section[k].first = (section[k - 1].second + 1) % (s->location.size() - 1);
-    return section;
+    int down = floor((s->tour_[vehicle].size()-1)/4.0);
+    int up = ceil((s->tour_[vehicle].size()-1)/4.0);
+    pair<int,int> a = make_pair(1,down);
+    pair<int,int> b = make_pair(a.second+1,a.second+up);
+    pair<int,int> c = make_pair(b.second+1,b.second+down);
+    pair<int,int> d = make_pair(c.second+1,s->tour_[vehicle].size()-2);
+    return {d,c,b,a};
 }
+
+
+// int main(int argc, char *argv[])
+// {
+// 	srand(time(0));
+//     Input in(argc, argv);
+//     Solution s(&in);
+//     Construction c;
+//     Perturbation p;
+
+//     int Imax = 50;
+// 	int Iils = (in.nLocation() >= 150) ? in.nLocation() / 2 : in.nLocation();
+//     vector<double> R;
+// 	R.push_back(0.00);
+// 	for (int i = 1; i <= 25; i++)
+// 		R.push_back(R[i - 1] + 0.01);
+    
+//     for (auto r: R){
+//         c.constructiveProcedure(&s,r);
+//         cout<<s<<endl;
+//         p.bridgePerturbation(&s,4);
+//         cout<<s<<endl;
+        
+//     }
+
+//     return 0;
+// }
