@@ -38,3 +38,4 @@ src/a.out.dSYM/Contents/Info.plist
 *.app
 bpcg
 tsp
+.vscode/settings.json
