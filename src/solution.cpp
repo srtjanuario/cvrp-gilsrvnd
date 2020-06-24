@@ -1,84 +1,103 @@
 #include "solution.h"
 #include <cmath>
 #include <climits>
+#include <random>
+#include <ctime>
 using namespace std;
 
 Solution::Solution(Input *input)
 {
-
     this->in = input;
+    totalDistance_ = 0;
 
-    // Create a generic basic solution
-    for (unsigned i = 1; i <= this->in->dimensionGet(); i++)
-        location.push_back(i);
-    location.push_back(1);
+    capacityVehicle_ = vector<double>(in->nVehicle(), in->capacity());
+    tour_.resize(in->nVehicle());
+    tourDistance_ = vector<double>(in->nVehicle(), 0.0);
+    // Build a trivial solution
 
-    // Resize already fill the ellements with zeros!!!
-    // duration.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
-    // cost.resize(in->dimensionGet()+1, vector<int>(in->dimensionGet()+1));
-
-    computeCostValueTSP();
-    // computeCostValueMLP();
-}
-
-double Solution::t_(unsigned i, unsigned j)
-{
-    return in->distanceGet(location[i], location[j]);
-}
-
-void Solution::reset()
-{
-    costValueTSP = INT_MAX;
-    location.resize(0);
-}
-
-void Solution::computeCostValueTSP()
-{
-    costValueTSP = 0.0;
-    for (unsigned i = 0; i < location.size() - 1; i++)
-        costValueTSP += in->distanceGet(location[i], location[i + 1]);
-}
-
-ostream &operator<<(ostream &out, const Solution &s)
-{
-    double myCost = 0;
-    if (s.location.size() <= s.in->dimensionGet())
-        out << "Warning! Incomplete solution!!!" << endl;
-    if (s.costValueTSP < 0)
-        out << "Negative distance!!!" << endl;
-
-    out << "Dimension: " << s.in->dimensionGet() << endl;
-    out << "Distance: " << setprecision(1) << fixed << s.costValueTSP << endl;
-    out << "i = [";
-    for (unsigned i = 0; i < s.location.size(); i++)
-        out << setw(3) << i << " ";
-    out << "]" << endl;
-    out << "s = {";
-    for (unsigned i = 0; i < s.location.size(); i++)
-        if (i < s.location.size() - 1)
-        {
-            if (s.location[i] <= 7)
-                out << "\033[" << 30 + s.location[i] << "m";
-            if (8 <= s.location[i] && s.location[i] <= 14)
-                out << "\033[" << 83 + s.location[i] << "m";
-            out << setw(3) << s.location[i] << ",";
-        }
-        else
-        {
-            if (s.location[i] <= 7)
-                out << "\033[" << 30 + s.location[i] << "m";
-            if (8 <= s.location[i] && s.location[i] <= 14)
-                out << "\033[" << 83 + s.location[i] << "m";
-            out << setw(3) << s.location[i];
-        }
-    out << "}" << endl;
-
-    for (unsigned i = 0; i < s.location.size() - 1; i++)
+    vector<int> location;
+    do
     {
-        myCost += s.in->distanceGet(s.location[i], s.location[i + 1]);
-    }
+        location.resize(0);
+        for (int i = 1; i < in->nLocation(); i++)
+            location.push_back(i);
+        
+        shuffle(location.begin(), location.end(), default_random_engine(time(0)));
 
-    if (abs(myCost - s.costValueTSP) > 0.0001)
-        out << "Something wrong...the cost should be: " << myCost << endl;
+        for (int v = 0; v < in->nVehicle(); v++){
+            tour_[v] = {0};
+            capacityVehicle_[v]=in->capacity();
+        }
+
+        for (int v = 0; v < in->nVehicle() && location.size(); v++)
+        {
+            for( int l = 0; l < location.size();)
+            {
+                if(in->demand(location[l]) <= capacityVehicle_[v]){
+                    capacityVehicleSet(v, capacityVehicle(v) - in->demand(location[l]));
+                    tour_[v].push_back(location[l]);
+                    location.erase(location.begin()+l);
+                    l--;
+                }
+                l++;
+            }
+        }
+
+        for (int v = 0; v < in->nVehicle(); v++)
+            tour_[v].push_back(0);
+    } while (location.size());
+}
+
+double Solution::totalDistance()
+{
+    if (this->totalDistance_)
+        return this->totalDistance_;
+
+    for (int v = 0; v < in->nVehicle(); v++)
+    {
+        tourDistance_[v] = 0;
+        for (int i = 0; i < tour_[v].size() - 1; i++)
+            tourDistance_[v] += in->distance(tour_[v][i], tour_[v][i + 1]);
+        totalDistance_ += tourDistance_[v];
+    }
+    return totalDistance_;
+}
+
+double Solution::capacityVehicle(int vehicle) const
+{
+    return this->capacityVehicle_[vehicle];
+}
+
+void Solution::capacityVehicleSet(int vehicle, double value)
+{
+    this->capacityVehicle_[vehicle] = value;
+}
+
+ostream &operator<<(ostream &out, Solution &s)
+{
+    out << s.totalDistance() << " 0"
+        << "\\n"; 
+        // << endl;
+
+    for (int v = 0; v < s.in->nVehicle(); v++)
+    {
+        for (int i = 0; i < s.tour_[v].size(); i++)
+        {
+            out << s.tour_[v][i];
+            if (i < s.tour_[v].size() - 1)
+                out << " ";
+        }
+        out << "\\n";
+        // out << endl;
+    }
     return out;
 }
+
+// int main(int argc, char *argv[])
+// {
+//     Input in(argc, argv);
+//     // cout << in << endl;
+//     Solution s(&in);
+//     cout << s << endl;
+//     return 0;
+// }
