@@ -7,38 +7,37 @@ class Neighborhood{
         // Neighborhood(Input *input, Statistics *st);
         Neighborhood(Input *input);
         vector<string> NeighborhoodList(){return NL;};
-        void improove(Solution* s,string choosenNeighborhood);
+        void improve(Solution* s,string choosenNeighborhood);
         /**
          * SWAP
         */
         void bestSwap(Solution* s);
-        void firstSwap(Solution* s);
-        double swapDeltaEvaluation(Solution* s,int i,int j);
-        void swapMove(Solution* s,int i,int j, double delta);
+        double swapDeltaEvaluation(Solution* s,int vehicle, int i,int j);
+        void swapMove(Solution* s,int vehicle, int i,int j, double delta);
+
+        void swapVehicle(Solution* s);
+        pair<double,double> swapVehicleDeltaEvaluation(Solution* s,int v1, int v2, int i,int j);
+        void swapVehicleMove(Solution *s, int v1, int v2, int a, int b, pair<double,double> delta);
 
         /**
          * 2-opt
         */
-        void firstTwoOpt(Solution* s);
         void bestTwoOpt(Solution* s);
-        double twoOptDeltaEvaluation(Solution* s,int arci,int arcj);
-        void twoOptMove(Solution* s, int arci,int arcj, double delta);
+        double twoOptDeltaEvaluation(Solution* s,int vehicle, int arci,int arcj);
+        void twoOptMove(Solution* s, int vehicle, int arci,int arcj, double delta);
 
         /**
          * reInsertion
         */
-        void firstReInsertion(Solution* s, int size = 1);
         void bestReInsertion(Solution* s, int size = 1 );
-        double reInsertionDeltaEvaluation(Solution* s, int arc, int size, int shift);
-        void reInsertionMove(Solution* s, int arc, int size, int shift, double delta);
+        double reInsertionDeltaEvaluation(Solution* s, int vehicle, int arc, int size, int shift);
+        void reInsertionMove(Solution* s, int vehicle, int arc, int size, int shift, double delta);
         
 
     //private:
     Input* in;
     vector<string> NL;
-    // vector<int> reInsertionAuxVector;
     friend ostream & operator << (ostream &out, const Neighborhood &c);
-    vector< pair<int,int> > sigma;
 
 };
 
