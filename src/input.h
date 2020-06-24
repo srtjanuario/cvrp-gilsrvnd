@@ -1,37 +1,37 @@
 #ifndef INPUT_H_INCLUDED
 #define INPUT_H_INCLUDED
 #include <iostream>
+#include <vector>
 using namespace std;
 
-class Input{
-    public:
-        Input(){};
-        Input( int , char**);
+class Input
+{
+public:
+    Input(int, char **);
 
-        // Dimension
-        unsigned dimensionGet();
-        void dimensionSet(unsigned d);
+    int nLocation() const;
+    void nLocationSet(unsigned d);
 
-        // Distance
-        double distanceGet(unsigned i, unsigned j) const;
-        void distanceSet(unsigned i, unsigned j, double value);
+    int nVehicle() const;
+    void nVehicleSet(unsigned d);
 
-        //Problem
-        void problemSet(int p){problem_=p;}
-        int problemGet(){return problem_;}
-        
-        friend ostream & operator << (ostream &out, Input &c);
+    double capacity() const;
+    void capacitySet(unsigned d);
 
-    private:
-        unsigned dimension_; // quantidade total de vertices
-        double ** distance_; // matriz de adjacencia
-        /**
-         * 0 - TSP
-         * 1 - MLP
-         */
-        int problem_;
+    double demand(unsigned i) const;
+    void demandSet(unsigned i, double value);
 
-        
+    double distance(unsigned i, unsigned j);
+    void distanceSet(unsigned i, unsigned j, double value);
+
+    friend ostream &operator<<(ostream &out, Input &c);
+
+private:
+    int nLocation_;
+    int nVehicle_;
+    int capacity_;
+    vector<double> demand_;
+    vector<vector<double> > distance_;
 };
 
 #endif //INPUT_H_INCLUDED
