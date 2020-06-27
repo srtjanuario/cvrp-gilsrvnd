@@ -1,14 +1,3 @@
-CPLEX_VERSION = 12.10
-
-#detecta se o sistema é de 32 ou 64 bits
-BITS_OPTION = -m64
-
-####diretorios com as libs do cplex
-CPLEXDIR  = /Applications/CPLEX_Studio1210/cplex
-CONCERTDIR = /Applications/CPLEX_Studio1210/concert
-   
-CPLEXLIBDIR   = $(CPLEXDIR)/lib/x86-64_osx/static_pic
-CONCERTLIBDIR = $(CONCERTDIR)/lib/x86-64_osx/static_pic
 
 #### define o compilador
 CPPC = g++ -O3 -std=c++2a 
@@ -16,13 +5,11 @@ CPPC = g++ -O3 -std=c++2a
 
 #### opcoes de compilacao e includes
 CCOPT = $(BITS_OPTION) -g -fPIC -fexceptions -DNDEBUG -DIL_STD
-CONCERTINCDIR = $(CONCERTDIR)/include
-CPLEXINCDIR   = $(CPLEXDIR)/include
-CCFLAGS = $(CCOPT) -I$(CPLEXINCDIR) -I$(CONCERTINCDIR)
+CCFLAGS = $(CCOPT) 
 #############################
 
 #### flags do linker
-CCLNFLAGS = -L$(CPLEXLIBDIR) -lilocplex -lcplex -L$(CONCERTLIBDIR) -lconcert -lm -lpthread 
+CCLNFLAGS =  -lm -lpthread 
 #############################
 
 #### diretorios com os source files e com os objs files
@@ -36,7 +23,7 @@ OBJS = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
 #############################
 
 #### regra principal, gera o executavel
-tsp: $(OBJS) 
+cvrp: $(OBJS) 
 	@echo  "\033[31m \nLinking all objects files: \033[0m"
 	$(CPPC) $(BITS_OPTION) $(OBJS) -o $@ $(CCLNFLAGS)
 ############################
@@ -58,8 +45,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 #delete objetos e arquivos de dependencia
 clean:
 	@echo "\033[31mcleaning obj directory \033[0m"
-	@rm tsp $(OBJDIR)/*.o $(OBJDIR)/*.d
+	@rm cvrp $(OBJDIR)/*.o $(OBJDIR)/*.d
 	clear
 
 
-rebuild: clean tsp
+rebuild: clean cvrp
