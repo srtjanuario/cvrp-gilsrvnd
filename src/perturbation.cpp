@@ -100,30 +100,30 @@ vector<pair<int, int>> Perturbation::makeBridges(const Solution *s, int bridges,
 }
 
 
-int main(int argc, char *argv[])
-{
-	srand(time(0));
-    Input in(argc, argv);
-    Solution s(&in);
-    Construction c;
-    Perturbation p;
+// int main(int argc, char *argv[])
+// {
+// 	srand(time(0));
+//     Input in(argc, argv);
+//     Solution s(&in);
+//     Construction c;
+//     Perturbation p;
 
-    int Imax = 50;
-	int Iils = (in.nLocation() >= 150) ? in.nLocation() / 2 : in.nLocation();
-    vector<double> R;
-	R.push_back(0.00);
-	for (int i = 1; i <= 25; i++)
-		R.push_back(R[i - 1] + 0.01);
+//     int Imax = 50;
+// 	int Iils = (in.nLocation() >= 150) ? in.nLocation() / 2 : in.nLocation();
+//     vector<double> R;
+// 	R.push_back(0.00);
+// 	for (int i = 1; i <= 25; i++)
+// 		R.push_back(R[i - 1] + 0.01);
     
-    for (auto r: R){
-        c.constructiveProcedure(&s,r);
-        cout<<s<<endl;
-        p.reinsertion(&s);
-        cout<<s<<endl;
-        s.totalDistance_=0;
-        cout<<s<<endl;
-        exit(0);
-    }
+//     for (auto r: R){
+//         c.constructiveProcedure(&s,r);
+//         cout<<s<<endl;
+//         p.reinsertion(&s);
+//         cout<<s<<endl;
+//         s.totalDistance_=0;
+//         cout<<s<<endl;
+//         exit(0);
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
